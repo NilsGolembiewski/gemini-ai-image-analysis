@@ -16,12 +16,25 @@ The CLI resolves API keys in this order:
 2. `GEMINI_API_KEY`
 3. `GOOGLE_API_KEY`
 4. `GEMINI_IMAGE_CLI_GOOGLE_API_KEY`
-5. matching keys from `--dotenv-path` / `.env`
+5. cached key at `${XDG_CONFIG_HOME:-~/.config}/ai-image-cli/google-api-key`
+6. matching keys from `--dotenv-path` / `.env`
+
+Cache a key for future runs with either:
+
+```bash
+ai-image-cli --auth --api-key "$GOOGLE_API_KEY"
+printf '%s' "$GOOGLE_API_KEY" | ai-image-cli --auth
+```
+
+Use `--auth` by itself, without an analysis subcommand. When reading from stdin, the command waits for EOF before caching.
+
+The cache directory is created with `0700` permissions and the key file is written with `0600` permissions.
 
 ## Commands
 
 ```bash
 ai-image-cli analyze --file screenshot.png
+ai-image-cli --auth --api-key "$GOOGLE_API_KEY"
 ai-image-cli analyze-webpage --file homepage.png --format json
 ai-image-cli analyze-mobile --file app.png --platform ios --format json
 ```

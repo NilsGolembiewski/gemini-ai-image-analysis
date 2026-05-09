@@ -24,10 +24,12 @@ Use this skill when you need image analysis from a local file, URL, base64 strin
 
 - Prefer `--format json` for structured downstream use.
 - Use `--focus` on webpage and mobile commands when the task is narrow.
+- Cache a Gemini key once with top-level `ai-image-cli --auth` so later runs can omit `--api-key`.
 - Read stdout for results and stderr for diagnostics.
 
 ## Examples
 
 - `ai-image-cli analyze --file screenshot.png --prompt "Summarize the visible error state"`
+- `printf '%s' "$GOOGLE_API_KEY" | ai-image-cli --auth`
 - `ai-image-cli analyze-webpage --file homepage.png --focus accessibility --format json`
 - `ai-image-cli analyze-mobile --file app.png --platform ios --focus navigation --format json`

@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from ai_image_cli import __version__
-from ai_image_cli.config import resolve_api_key
+from ai_image_cli.config import resolve_api_key, save_api_key
 from ai_image_cli.errors import CliError, ExitCode
 from ai_image_cli.formatters import normalize_json_output, write_output
 from ai_image_cli.gemini_client import analyze_with_gemini
@@ -24,6 +24,13 @@ from ai_image_cli.prompts import (
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ai-image-cli", description="Analyze images with Gemini 3 Flash.")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    parser.add_argument(
+        "--auth",
+        action="store_true",
+        help="Cache the Gemini API key from --api-key or stdin, then exit.",
+    )
+    parser.add_argument("--api-key")
+    parser.add_argument("--dotenv-path", default=".env")
 
     common = argparse.ArgumentParser(add_help=False)
     source_group = common.add_mutually_exclusive_group(required=True)
@@ -43,7 +50,7 @@ def build_parser() -> argparse.ArgumentParser:
     common.add_argument("--verbose", action="store_true")
     common.add_argument("--quiet", action="store_true")
 
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers = parser.add_subparsers(dest="command")
 
     analyze = subparsers.add_parser("analyze", aliases=["image"], parents=[common], help="Analyze a general image.")
     analyze.add_argument("--format", choices=("text", "json"), default="text")
@@ -88,6 +95,16 @@ def _read_prompt(args: argparse.Namespace) -> str | None:
 def _emit_error(message: str, *, stderr, quiet: bool) -> None:
     if not quiet:
         stderr.write(message.rstrip() + "\n")
+
+
+def _read_auth_api_key(args: argparse.Namespace, stdin_text: str | None) -> str:
+    if args.api_key is not None:
+        return args.api_key
+
+    if stdin_text is not None:
+        return stdin_text.strip()
+
+    return sys.stdin.read().strip()
 
 
 def _build_request(args: argparse.Namespace, prompt: str | None) -> tuple[AnalysisRequest, dict | None]:
@@ -143,6 +160,13 @@ def main(argv: list[str] | None = None, *, stdout=None, stderr=None, stdin_text:
 
     try:
         args = parser.parse_args(argv)
+        if args.auth:
+            if args.command is not None:
+                raise CliError("Use --auth without a subcommand.", ExitCode.USAGE)
+            save_api_key(_read_auth_api_key(args, stdin_text))
+            return ExitCode.SUCCESS
+        if args.command is None:
+            raise CliError("A command is required unless --auth is used.", ExitCode.USAGE)
         if args.verbose and args.quiet:
             raise CliError("Choose either --verbose or --quiet, not both.", ExitCode.USAGE)
 
