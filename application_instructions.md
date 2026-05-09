@@ -1,4 +1,4 @@
-Create an AI image processing/analysis CLI tool. This tool uses gemini-3-flash model as the only model. Do not include functionality to select the model.
+Create an AI image processing/analysis CLI tool. This tool uses gemini-3-flash-preview model as the only model. Do not include functionality to select the model.
 
 The CLI is in python, and should be installable using pip.
 

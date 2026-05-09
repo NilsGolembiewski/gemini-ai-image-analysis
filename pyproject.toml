@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-image-cli"
+version = "0.1.0"
+description = "CLI image analysis with Gemini 3 Flash"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "google-genai>=2.0.1,<3",
+  "python-dotenv>=1.2.1,<2",
+]
+authors = [
+  { name = "OpenCode" }
+]
+keywords = ["gemini", "cli", "image", "vision"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+]
+
+[project.scripts]
+ai-image-cli = "ai_image_cli.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
