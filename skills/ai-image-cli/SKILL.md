@@ -22,6 +22,9 @@ Use this skill when you need image analysis from a local file, URL, base64 strin
 
 ## Guidance
 
+- Use `--prompt "your query"` to provide a custom analysis question inline, or `--prompt-file <path>` to read it from a file.
+- On `analyze`, `--prompt` replaces the default prompt entirely.
+- On `analyze-webpage` and `analyze-mobile`, `--prompt` is appended as an additional request to the built-in domain prompt.
 - Prefer `--format json` for structured downstream use.
 - Use `--focus` on webpage and mobile commands when the task is narrow.
 - Cache a Gemini key once with top-level `ai-image-cli --auth` so later runs can omit `--api-key`.
@@ -30,6 +33,9 @@ Use this skill when you need image analysis from a local file, URL, base64 strin
 ## Examples
 
 - `ai-image-cli analyze --file screenshot.png --prompt "Summarize the visible error state"`
+- `ai-image-cli analyze --file diagram.png --prompt-file prompt.txt`
+- `ai-image-cli analyze-webpage --file homepage.png --prompt "Is the color contrast sufficient?" --focus accessibility --format json`
+- `ai-image-cli analyze-mobile --file app.png --prompt "Check for missing tap targets" --platform ios --focus navigation --format json`
 - `printf '%s' "$GOOGLE_API_KEY" | ai-image-cli --auth`
 - `ai-image-cli analyze-webpage --file homepage.png --focus accessibility --format json`
 - `ai-image-cli analyze-mobile --file app.png --platform ios --focus navigation --format json`
